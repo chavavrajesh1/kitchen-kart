@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { registerUser, loginUser } from '../services/auth.service.js';
+import { registerUser, loginUser, refreshAccessToken } from '../services/auth.service.js';
 
 export const register = async (
     req: Request,
@@ -45,4 +45,22 @@ export const getProfile = async (
         message: "Profile fetched successfully",
         data: req.user,
     });
+};
+
+export const refresh = async (
+    req: Request, res: Response, next: NextFunction
+) => {
+    try {
+        const { refreshToken } = req.body;
+
+        const accessToken = await refreshAccessToken(refreshToken);
+
+        return res.status(200).json({
+            success: true,
+            message: "Access token refreshed successfully",
+            data: accessToken,
+        });
+    } catch (error) {
+        next(error);
+    }
 };

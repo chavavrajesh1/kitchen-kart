@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import type { RegisterInput, LoginInput } from '../schemas/auth.schema.js';
 import { findUserByEmail, createUser } from '../repositories/user.repository.js';
 import { AppError } from '../utils/AppError.js';
-import { generateAccessToken } from "../utils/jwt.js";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwt.js";
 
 export const registerUser = async (data: RegisterInput) => {
     const { firstName, lastName, email, password } = data;
@@ -50,8 +50,6 @@ export const loginUser = async (data: LoginInput) => {
         throw new AppError("Invalid email or password", 401);
     }
 
-    const accessToken = generateAccessToken({ userId: user.id, email: user.email });
-
     return {
         user: {
             id: user.id,
@@ -60,6 +58,27 @@ export const loginUser = async (data: LoginInput) => {
             email: user.email,
             createdAt: user.createdAt,
         },
+        accessToken: generateAccessToken({
+            userId: user.id,
+            email: user.email,  
+        }),
+        refreshToken: generateRefreshToken({
+            userId: user.id,
+            email: user.email,
+        }),
+    };
+};
+
+export const refreshAccessToken = async (refreshToken: string) => {
+    const payload = verifyRefreshToken(refreshToken);
+
+    const accessToken = generateAccessToken({
+        userId: payload.userId,
+        email: payload.email,
+    });
+
+    return {
         accessToken,
     };
 };
+

@@ -1,9 +1,8 @@
 import { Router } from "express";
-import { loginSchema, registerSchema } from "../schemas/auth.schema.js";
+import { loginSchema, registerSchema, refreshTokenSchema } from "../schemas/auth.schema.js";
 import { validate } from "../middlewares/validate.js";
-import { register, login } from "../controllers/auth.controller.js";
+import { register, login, refresh, getProfile } from "../controllers/auth.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js"
-import { getProfile } from "../controllers/auth.controller.js";
 
 const router = Router();
 
@@ -17,6 +16,12 @@ router.post(
     "/login",
     validate(loginSchema),
     login
+)
+
+router.post(
+    "/refresh",
+    validate(refreshTokenSchema),
+    refresh
 )
 
 router.get(
