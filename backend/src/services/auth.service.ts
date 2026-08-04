@@ -82,3 +82,8 @@ export const refreshAccessToken = async (refreshToken: string) => {
     };
 };
 
+export const logoutUser = async () => {
+    return {
+        message: "Logout successful",
+    };
+};

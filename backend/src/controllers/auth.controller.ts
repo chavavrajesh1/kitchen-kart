@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { registerUser, loginUser, refreshAccessToken } from '../services/auth.service.js';
+import { registerUser, loginUser, refreshAccessToken, logoutUser } from '../services/auth.service.js';
 
 export const register = async (
     req: Request,
@@ -64,3 +64,19 @@ export const refresh = async (
         next(error);
     }
 };
+
+export const logout = async (
+    req: Request, res: Response, next: NextFunction
+) => {
+    try {
+        const result = await logoutUser();
+
+        return res.status(200).json({
+            success: true,
+            message: result.message,
+        });
+    } catch (error) {
+        next(error);
+    }
+
+}

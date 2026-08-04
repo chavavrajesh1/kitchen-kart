@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { loginSchema, registerSchema, refreshTokenSchema } from "../schemas/auth.schema.js";
 import { validate } from "../middlewares/validate.js";
-import { register, login, refresh, getProfile } from "../controllers/auth.controller.js";
+import { register, login, refresh, logout, getProfile } from "../controllers/auth.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js"
 
 const router = Router();
@@ -23,6 +23,12 @@ router.post(
     validate(refreshTokenSchema),
     refresh
 )
+
+router.post(
+    "/logout",
+    authenticate,
+    logout
+);
 
 router.get(
     "/profile",
