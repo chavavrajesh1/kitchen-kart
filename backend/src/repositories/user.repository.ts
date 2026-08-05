@@ -25,3 +25,45 @@ export const createUser = async (data: {
         },
     });
 };
+
+export const updatePasswordResetToken = async (
+    userId: string,
+    resetPasswordToken: string,
+    resetPasswordExpiry: Date
+) => {
+    return prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            resetPasswordToken,
+            resetPasswordExpiry,
+        },
+    });
+};
+
+export const findUserByResetPasswordToken = async (
+    resetPasswordToken: string
+) => {
+    return prisma.user.findFirst({
+        where: {
+            resetPasswordToken,
+        },
+    });
+};
+
+export const updateUserPassword = async (
+    userId: string,
+    hashedPassword: string
+) => {
+    return prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            password: hashedPassword,
+            resetPasswordToken: null,
+            resetPasswordExpiry: null,
+        },
+    });
+};

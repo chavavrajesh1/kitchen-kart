@@ -30,3 +30,23 @@ export const refreshTokenSchema = z.object({
 });
 
 export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>;
+
+export const forgotPasswordSchema = z.object({
+    email: z.string().trim().toLowerCase().email("Invalid email address"),
+});
+
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+
+export const resetPasswordSchema = z.object({
+    token: z.string().trim().min(1, "Token is required"),
+
+    password: z.string().min(8, "Password must be atleast 8 characters").max(72, "Password must not exceed 72 characters"),
+
+    confirmPassword: z.string().min(8, "Confirm Password must be atleast 8 characters"),
+})
+.refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+});
+
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

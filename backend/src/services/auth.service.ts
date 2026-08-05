@@ -1,8 +1,10 @@
 import bcrypt from 'bcrypt';
-import type { RegisterInput, LoginInput } from '../schemas/auth.schema.js';
-import { findUserByEmail, createUser } from '../repositories/user.repository.js';
+import type { RegisterInput, LoginInput, ForgotPasswordInput, ResetPasswordInput } from '../schemas/auth.schema.js';
+import { findUserByEmail, createUser, updatePasswordResetToken, findUserByResetPasswordToken, updateUserPassword } from '../repositories/user.repository.js';
 import { AppError } from '../utils/AppError.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwt.js";
+import crypto from "crypto";
+import { sendPasswordResetEmail } from './email.service.js';
 
 export const registerUser = async (data: RegisterInput) => {
     const { firstName, lastName, email, password } = data;
@@ -85,5 +87,51 @@ export const refreshAccessToken = async (refreshToken: string) => {
 export const logoutUser = async () => {
     return {
         message: "Logout successful",
+    };
+};
+
+export const forgotPassword = async (data: ForgotPasswordInput) => {
+    const { email } = data;
+
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+        return {
+            message: "If an account with that email exists, a password reset link has been sent.",
+        };
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    const resetTokenExpiry = new Date(Date.now() + 1000 * 60 * 15);
+
+    await updatePasswordResetToken(user.id, resetToken, resetTokenExpiry);
+
+    await sendPasswordResetEmail(email, resetToken);
+
+    return {
+        message: "Password reset link sent successfully",
+    }; 
+};
+
+export const resetPassword = async (data: ResetPasswordInput) => {
+    const { token, password } = data;
+
+    const user = await findUserByResetPasswordToken(token);
+
+    if (!user) {
+        throw new AppError("Invalid or expired reset token", 400);
+    }
+
+    if (!user.resetPasswordExpiry || user.resetPasswordExpiry < new Date()) {
+        throw new AppError("Reset token has expired", 400);
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    await updateUserPassword(user.id, hashedPassword);
+
+    return {
+        message: "Password has been reset successfully",
     };
 };

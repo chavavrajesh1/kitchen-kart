@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { registerUser, loginUser, refreshAccessToken, logoutUser } from '../services/auth.service.js';
+import { registerUser, loginUser, refreshAccessToken, logoutUser, forgotPassword, resetPassword } from '../services/auth.service.js';
 
 export const register = async (
     req: Request,
@@ -78,5 +78,34 @@ export const logout = async (
     } catch (error) {
         next(error);
     }
-
 }
+
+export const forgotPasswordController = async (
+    req: Request, res: Response, next: NextFunction
+) => {
+    try {
+        const result = await forgotPassword(req.body);
+
+        return res.status(200).json({
+            success: true,
+            message: result.message,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const resetPasswordController = async (
+    req: Request, res: Response, next: NextFunction
+) => {
+    try {
+        const result = await resetPassword(req.body);
+
+        return res.status(200).json({
+            success: true,
+            message: result.message,
+        })
+    } catch (error) {
+        next(error);
+    }
+};
