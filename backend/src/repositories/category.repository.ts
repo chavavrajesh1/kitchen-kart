@@ -39,3 +39,13 @@ export const getAllCategories = async () => {
         },
     });
 };
+
+export const findCategoryById = async (id: string) => {
+    return prisma.category.findFirst({
+        where: {
+            id,
+            isActive: true,
+        },
+    });
+};
+

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { createNewCategory, getCategories as getCategoriesService } from "../services/category.service.js";
-import { success } from "zod";
+import { createNewCategory, getCategories as getCategoriesService, getCategoryById as getCategoryByIdService } from "../services/category.service.js";
+import { AppError } from "../utils/AppError.js";
 
 export const createCategory = async (
     req: Request, res: Response, next: NextFunction
@@ -34,4 +34,27 @@ export const getCategories = async (
     } catch (error) {
         next(error);
     }
-}
+};
+
+export const getCategoryById = async (
+    req: Request<{id: string}>, res: Response, next: NextFunction 
+) => {  
+    try {
+
+    const {id} = req.params;
+
+    if (!id) {
+        throw new AppError("Category id is required", 404);
+    }
+
+        const category = await getCategoryByIdService(id);
+
+        return res.status(200).json({
+            success: true,
+            message: "Category fetched successfully",
+            data: category,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
