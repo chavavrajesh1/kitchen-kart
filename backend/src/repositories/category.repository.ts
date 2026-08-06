@@ -27,3 +27,15 @@ export const createCategory = async (data: CreateCategoryInput & { slug: string 
         },
     });
 };
+
+export const getAllCategories = async () => {
+    console.log("Repository Called");
+    return prisma.category.findMany({
+        where: {
+            isActive: true,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+};

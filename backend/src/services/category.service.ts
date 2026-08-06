@@ -1,6 +1,6 @@
 import slugify from "slugify";
 import { CreateCategoryInput } from "../schemas/category.schema.js";
-import { findCategoryByName, findCategoryBySlug, createCategory } from "../repositories/category.repository.js";
+import { findCategoryByName, findCategoryBySlug, createCategory, getAllCategories } from "../repositories/category.repository.js";
 import { AppError } from "../utils/AppError.js";
 
 export const createNewCategory = async (data: CreateCategoryInput) => {
@@ -29,4 +29,9 @@ export const createNewCategory = async (data: CreateCategoryInput) => {
 
     return category;
 
+};
+
+export const getCategories = async () => {
+    console.log("Service Called");
+    return await getAllCategories();
 };
