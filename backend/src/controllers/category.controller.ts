@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { createNewCategory, getCategories as getCategoriesService, getCategoryById as getCategoryByIdService } from "../services/category.service.js";
+import { createNewCategory, getCategories as getCategoriesService, getCategoryById as getCategoryByIdService, updateExistingCategory, softDeleteExistingCategory } from "../services/category.service.js";
 import { AppError } from "../utils/AppError.js";
+import { success } from "zod";
 
 export const createCategory = async (
     req: Request, res: Response, next: NextFunction
@@ -54,6 +55,44 @@ export const getCategoryById = async (
             message: "Category fetched successfully",
             data: category,
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateCategory = async (
+    req: Request<{id: string}>, res: Response, next: NextFunction
+) => {
+    try {
+
+        const {id} = req.params;
+
+        const category = await updateExistingCategory(id, req.body);
+
+        return res.status(200).json({
+            success: true,
+            message: "Category Updated Successfully",
+            data: category,
+        })
+    } catch (error) {
+        next(error)
+    }
+
+};
+
+export const deleteCategory = async (
+    req: Request<{id: string}>, res: Response, next: NextFunction
+) => {
+    try {
+        const {id} = req.params;
+
+        const category = await softDeleteExistingCategory(id);
+
+        return res.status(200).json({
+            success: true,
+            message: "Category deleted Successfully",
+            data: category,
+        })
     } catch (error) {
         next(error);
     }

@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma.js";
-import { CreateCategoryInput } from "../schemas/category.schema.js";
+import { CreateCategoryInput, UpdateCategoryInput } from "../schemas/category.schema.js";
 
 export const findCategoryByName = async (name: string) => {
     return prisma.category.findUnique({
@@ -49,3 +49,30 @@ export const findCategoryById = async (id: string) => {
     });
 };
 
+export const updateCategory = async (
+    id: string,
+    data: UpdateCategoryInput & { slug?: string }
+) => {
+    return prisma.category.update({
+        where: {
+            id,
+        },
+        data: {
+            ...(data.name !== undefined && { name: data.name }),
+            ...(data.slug !== undefined && { slug: data.slug }),
+            ...(data.description !== undefined && { description: data.description }),
+            ...(data.image !== undefined && { image: data.image }),
+        },
+    });
+};
+
+export const softDeleteCategory = async (id: string) => {
+    return prisma.category.update({
+        where: {
+            id,
+        },
+        data: {
+            isActive: false,
+        },
+    });
+};
