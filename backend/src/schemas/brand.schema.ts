@@ -7,3 +7,13 @@ export const createBrandSchema = z.object({
 
     description: z.string().trim().max(500,"Description must not exceed 500 characters").optional(),
 });
+
+export const updateBrandSchema = z.object({
+    name: z.string().trim().min(2, "Brand name must be atleast 2 characters").max(100, "Brand name must not exceed 100 characters").optional(),
+
+    slug: z.string().trim().min(2, "Brand name must be atleast 2 characters").max(100, "Brand slug must not exceed 100 characters").optional(),
+
+    description: z.string().trim().max(500, "Description must not 500 characters").optional(),
+
+    isActive: z.boolean().optional(),
+});
