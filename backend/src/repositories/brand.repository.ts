@@ -1,5 +1,4 @@
 import  prisma  from "../lib/prisma.js";
-import { AppError } from "../utils/AppError.js";
 
 export const findBrandByName = async (name: string) => {
     return prisma.brand.findUnique({
