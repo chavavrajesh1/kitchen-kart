@@ -17,6 +17,7 @@ model User {
   updatedAt           DateTime  @updatedAt
   resetPasswordExpiry DateTime?
   resetPasswordToken  String?
+  cart                Cart?
 }
 
 model Category {
@@ -59,4 +60,29 @@ model Product {
   updatedAt   DateTime @updatedAt
   brand       Brand    @relation(fields: [brandId], references: [id])
   category    Category @relation(fields: [categoryId], references: [id])
+  cartItems   CartItem[]
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id])
+  items     CartItem[]
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
 }
